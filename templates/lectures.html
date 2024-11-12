@@ -1,0 +1,42 @@
+<!-- templates/lectures.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Lecture Table</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lecture Information</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Lecture Name</th>
+                <th>Lecture Number</th>
+                <th>Lecture Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lecture in lectures %}
+            <tr>
+                <td>{{ lecture.lecture_name }}</td>
+                <td>{{ lecture.lecture_number }}</td>
+                <td>{{ lecture.lecture_time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
