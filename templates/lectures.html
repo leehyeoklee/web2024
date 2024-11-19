@@ -3,10 +3,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Lecture Table</title>
+    <title>시간표 생성</title>
     <style>
         table {
-            width: 100%;
+            width: 60%; /* 테이블 너비를 80%로 조정 */
+            margin: auto; /* 가운데 정렬 */
             border-collapse: collapse;
         }
         table, th, td {
@@ -16,27 +17,101 @@
             padding: 8px;
             text-align: left;
         }
+        .generate-button {
+            display: block;
+            width: 150px;
+            padding: 10px;
+            margin: 20px auto;
+            text-align: center;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+        .generate-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
-    <h1>Lecture Information</h1>
+    <h1 style="text-align: center;">강의 선택</h1>
     <table>
         <thead>
             <tr>
-                <th>Lecture Name</th>
-                <th>Lecture Number</th>
-                <th>Lecture Time</th>
+                <th>선택</th>
+                <th>강의명</th>
+                <th>강좌번호</th>
+                <th>학점</th>
+                <th>강의시간</th>
+                <th>수강정원</th>
+                <th>교수명</th>
             </tr>
         </thead>
         <tbody>
             {% for lecture in lectures %}
             <tr>
+                <td><input type="checkbox" name="select_lecture" value="{{ lecture.lecture_number }}"></td>
                 <td>{{ lecture.lecture_name }}</td>
                 <td>{{ lecture.lecture_number }}</td>
+                <td>{{ lecture.lecture_credit }}</td>
                 <td>{{ lecture.lecture_time }}</td>
+                <td>{{ lecture.lecture_students }}</td>
+                <td>{{ lecture.professor }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- "시간표 생성" 버튼 -->
+    <button class="generate-button" onclick="generateTimetable()">시간표 생성</button>
+
+    <script>
+            async function generateTimetable() {
+                const selectedLectures = [];
+                const rows = document.querySelectorAll("table tbody tr");
+        
+                rows.forEach(row => {
+                    const checkbox = row.querySelector("input[type='checkbox']");
+                    if (checkbox.checked) { // 선택된 강의를 객체로 만들어 배열에 넣음
+                        const lecture = {
+                            name: row.cells[1].textContent.trim(), // 강의명
+                            code: row.cells[2].textContent.trim(), // 강좌번호
+                            credits: parseInt(row.cells[3].textContent.trim()), // 학점
+                            time: row.cells[4].textContent.trim(), // 강의시간
+                            capacity: parseInt(row.cells[5].textContent.trim()), // 수강정원
+                            professor: row.cells[6].textContent.trim() // 교수명
+                        };
+                        selectedLectures.push(lecture);
+                    }
+                });
+        
+                if (selectedLectures.length === 0) {
+                    alert("선택된 강의가 없습니다.");
+                    return;
+                }
+        
+                try {   // 강의들의 배열을 json 형태로 서버에 보냄
+                    const response = await fetch("http://127.0.0.1:8000/api/timetable", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(selectedLectures)
+                    });
+        
+                    if (!response.ok) {
+                        throw new Error("서버 응답 오류");
+                    }
+        
+                    const result = await response.json();
+                    console.log("서버 응답:", result);
+                    alert("서버로 데이터를 성공적으로 전송했습니다!");
+                } catch (error) {
+                    console.error("전송 실패:", error);
+                    alert("서버로 데이터를 전송하는 데 실패했습니다.");
+                }
+            }
+    </script>
 </body>
 </html>
