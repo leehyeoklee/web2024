@@ -2,7 +2,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
-
 def get_lecture_data():
     # 옵션 생성
     options = webdriver.ChromeOptions()

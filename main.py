@@ -10,12 +10,13 @@ templates = Jinja2Templates(directory='.')
 
 @app.get("/", response_class=HTMLResponse)
 async def read_lectures(request: Request):
+    lectures = []
     # Selenium 크롤링 데이터 호출
     lecture_datas = get_lecture_data()
     # HTML 파일을 RETURN 해줌
     return templates.TemplateResponse("index.html", {"request": request, "lectures": lecture_datas})
-lectures = []
 
+lectures = []
 # POST 엔드포인트 정의
 @app.post("/api/timetable")
 async def receive_timetable(lecture: Lecture):
@@ -23,6 +24,5 @@ async def receive_timetable(lecture: Lecture):
         lectures.append(lecture)
     else:
         lectures.remove(lecture)
-    timetable = create_timetable(lectures)
-    return {"timetable": timetable}
+    return {"timetable": create_timetable(lectures)}
 # uvicorn main:app --reload
