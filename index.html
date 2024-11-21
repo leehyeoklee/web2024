@@ -1,1 +1,121 @@
-<h1>Hello Github</h1>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>시간표 생성</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: space-between;
+            margin: 0;
+            padding: 20px;
+        }
+        /* 시간표 스타일 */
+        table {
+            width: 100%; /* 테이블 너비를 더 크게 설정 */
+            border-collapse: collapse;
+            margin-right: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .selected {
+            background-color: #dff0d8; /* 선택된 행의 배경색 */
+        }
+
+        /* 오른쪽 고정 프레임 스타일 */
+        .frame {
+            width: 20%; /* 프레임의 너비를 줄임 */
+            height: 100vh;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            position: fixed;
+            top: 0;
+            right: 0;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- 시간표 표 -->
+    <div>
+        <h1 style="text-align: center;">강의 선택</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>강의명</th>
+                    <th>강좌번호</th>
+                    <th>학점</th>
+                    <th>강의시간</th>
+                    <th>수강정원</th>
+                    <th>교수명</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lecture in lectures %}
+                <tr onclick="handleLectureClick(this)">
+                    <td>{{ lecture.lecture_name }}</td>
+                    <td>{{ lecture.lecture_number }}</td>
+                    <td>{{ lecture.lecture_credit }}</td>
+                    <td>{{ lecture.lecture_time }}</td>
+                    <td>{{ lecture.lecture_students }}</td>
+                    <td>{{ lecture.professor }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 오른쪽 고정 프레임 (빈 상태) -->
+    <div class="frame">
+        <!-- 여기에 아무것도 추가하지 않았습니다. -->
+    </div>
+
+    <!-- 자바스크립트 코드 유지 -->
+    <script>
+        async function handleLectureClick(row) {
+            const lecture = {
+                name: row.cells[0].textContent.trim(), // 강의명
+                code: row.cells[1].textContent.trim(), // 강좌번호
+                credits: parseInt(row.cells[2].textContent.trim()), // 학점
+                time: row.cells[3].textContent.trim(), // 강의시간
+                capacity: parseInt(row.cells[4].textContent.trim()), // 수강정원
+                professor: row.cells[5].textContent.trim() // 교수명
+            };
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/timetable", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(lecture) // 강의 데이터 전송
+                });
+
+                if (!response.ok) {
+                    throw new Error("서버 응답 오류");
+                }
+
+                const result = await response.json();
+                console.log("서버 응답:", result);
+
+                // 선택된 행 강조
+                row.classList.toggle("selected");
+
+            } catch (error) {
+                console.error("전송 실패:", error);
+                alert("전송 중 오류가 발생했습니다.");
+            }
+        }
+    </script>
+</body>
+</html>
