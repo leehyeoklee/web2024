@@ -112,7 +112,7 @@
                     <th>교수명</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody> 
                 {% for lecture in lectures %}
                 <tr onclick="handleLectureClick(this)">
                     <td>{{ lecture.lecture_name }}</td>
@@ -204,8 +204,7 @@
             }
         }
 
-        // 시간표에 강의 정보 반영
-        // 시간표에 강의 정보 반영
+        
 // 시간표에 강의 정보 반영
 function populateTimetable(timetable) {
     const timetableContainer = document.getElementById("timetable");
@@ -230,11 +229,11 @@ function populateTimetable(timetable) {
                     cell.style.backgroundColor = "#add8e6"; // 색상 추가
                     cell.style.color = "#000";
                     cell.style.textAlign = "center";
-                    cell.style.whiteSpace = "pre-wrap"; // 줄바꿈 처리
-                    cell.style.fontSize = "8px"; // 글자 크기 조정
-                    cell.style.overflow = "hidden"; // 넘치는 글자 숨기기
-                    cell.style.textOverflow = "ellipsis"; // 텍스트가 넘칠 경우 생략 부호 표시
-                    cell.style.wordBreak = "break-word"; // 단어가 칸을 넘을 경우 줄바꿈
+                    cell.style.whiteSpace = "pre-wrap"; 
+                    cell.style.fontSize = "8px"; 
+                    cell.style.overflow = "hidden";
+                    cell.style.textOverflow = "ellipsis"; 
+                    cell.style.wordBreak = "break-word"; 
                 }
             }
         });
