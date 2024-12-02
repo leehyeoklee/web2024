@@ -5,18 +5,68 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from selenium_scraper import get_lecture_data  # 데이터 가져오는 함수 임포트
 from timetable import create_timetable
+from fastapi.staticfiles import StaticFiles
+from selenium_scraper import get_department_options
+
 app = FastAPI()
+
+app.mount("/select", StaticFiles(directory="select"), name="select")
 templates = Jinja2Templates(directory='.')
+department_options = []
+lectures = []   # 선택할 과목들의 배열
+lecture_datas = []  # 크롤링해올 과목 데이터들의 배열
+professors = []
+selection = []
+semester=""
 
 @app.get("/", response_class=HTMLResponse)
-async def read_lectures(request: Request):
-    lectures = []
-    # Selenium 크롤링 데이터 호출
-    lecture_datas = get_lecture_data()
-    # HTML 파일을 RETURN 해줌
-    return templates.TemplateResponse("index.html", {"request": request, "lectures": lecture_datas})
+async def main_page(request: Request):
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+    })    
+    
 
-lectures = []
+@app.post("/api/submit-semester")
+async def submit_semester(request: Request):
+    # 클라이언트에서 전송한 JSON 데이터를 파싱
+    global semester
+    data = await request.json()
+    semester = data.get('semester')
+
+@app.get("/select", response_class=HTMLResponse)
+async def selection_page(request: Request):
+    # 학과 목록 데이터 가져오기
+    global department_options
+    if(not department_options):
+        department_options = get_department_options()  # 동기 함수 호출
+    return templates.TemplateResponse("selection.html", {
+        "request": request,
+        "departments": department_options  # 학과 목록 데이터 추가
+    })
+    
+@app.post("/api/submit-department")
+async def submit_department(request: Request):
+    # 클라이언트에서 전송한 JSON 데이터를 파싱
+    global lecture_datas, professors
+    data = await request.json()
+    department_value = data.get('departmentValue')
+    # get_lecture_data 함수에 department_value를 전달
+    lecture_datas, professors = get_lecture_data(department_value,semester)
+    return {'professors': professors}
+
+@app.post("/api/submit-selection")
+async def submit_selection(request: Request):
+    # 클라이언트에서 전송한 JSON 데이터를 파싱
+    global selection
+    selection = await request.json()
+
+@app.get("/api/timetable", response_class=HTMLResponse)
+async def read_lectures(request: Request):
+    global lectures, lecture_datas
+    lectures = []
+    # HTML 파일을 RETURN 해줌
+    return templates.TemplateResponse("templates/timetable.html", {"request": request, "lectures": lecture_datas})
+
 # POST 엔드포인트 정의
 @app.post("/api/timetable")
 async def receive_timetable(lecture: Lecture):
@@ -25,4 +75,6 @@ async def receive_timetable(lecture: Lecture):
     else:
         lectures.remove(lecture)
     return {"timetable": create_timetable(lectures)}
+
+
 # uvicorn main:app --reload
