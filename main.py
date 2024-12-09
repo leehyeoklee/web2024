@@ -7,16 +7,17 @@ from selenium_scraper import get_lecture_data  # 데이터 가져오는 함수 �
 from timetable import create_timetable
 from fastapi.staticfiles import StaticFiles
 from selenium_scraper import get_department_options
+from timetable import Preference
 
 app = FastAPI()
 
-app.mount("/select", StaticFiles(directory="select"), name="select")
+app.mount("/images", StaticFiles(directory="images"), name="images")
 templates = Jinja2Templates(directory='.')
 department_options = []
 lectures = []   # 선택할 과목들의 배열
 lecture_datas = []  # 크롤링해올 과목 데이터들의 배열
 professors = []
-selection = []
+preference = [] # 선호도
 semester=""
 
 @app.get("/", response_class=HTMLResponse)
@@ -57,9 +58,10 @@ async def submit_department(request: Request):
 @app.post("/api/submit-selection")
 async def submit_selection(request: Request):
     # 클라이언트에서 전송한 JSON 데이터를 파싱
-    global selection
-    selection = await request.json()
-
+    global preference
+    data = await request.json()
+    preference = Preference(**data)
+    print(preference)
 @app.get("/api/timetable", response_class=HTMLResponse)
 async def read_lectures(request: Request):
     global lectures, lecture_datas
@@ -74,7 +76,8 @@ async def receive_timetable(lecture: Lecture):
         lectures.append(lecture)
     else:
         lectures.remove(lecture)
-    return {"timetable": create_timetable(lectures)}
+    if(len(lectures)):
+        return {"timetable": create_timetable(lectures,preference=preference)}
 
 
 # uvicorn main:app --reload

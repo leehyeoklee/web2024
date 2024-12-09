@@ -5,84 +5,213 @@
     <title>시간표 생성</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: space-between;
+            font-family: 'Inter', 'Arial', sans-serif;
             margin: 0;
-            padding: 20px;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-right: 20px;
-        }
-        
-        table, th, td {
-            border: 1px solid black;
-        }
-        
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        
-        th {
-            background-color: #f4f4f4;
-        }
-        
-        .selected {
-            background-color: #dff0d8;
-        }
-        
-        .frame {
-            width: 50%; /* 오른쪽 프레임 넓이 */
-            height: 100vh;
-            background-color: #f9f9f9;
-            padding: 20px;
-            border: 1px solid #ddd;
-            position: fixed;
-            top: 0;
-            right: 0;
-            overflow-y: auto;
-        }
-        
-        #timetable {
-            display: grid;
-            grid-template-columns: 80px repeat(7, 1fr); /* 교시와 요일에 맞춰서 열 설정 */
-            grid-auto-rows: 50px; /* 모든 칸의 height를 동일하게 */
-            gap: 1px;
-            background-color: #ddd;
-        }
-        
-        /* 시간과 요일 헤더 */
-        #timetable > div:nth-child(-n+6) {
-            text-align: center;
-            font-size: 18px; /* 글자 크기 2배 */
-            font-weight: normal; /* 글자 굵기 없앰 */
+            padding: 0;
+            background: linear-gradient(135deg, 
+                        #E6F7FF, 
+                        #B3E0FF, 
+                        #80CCFF, 
+                        #4DB8FF, 
+                        #1A98E0); 
+            background-size: 400% 400%;
+            animation: skyCloudMove 12s linear infinite; 
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            background-attachment: fixed; 
         }
         
-        /* 각 시간 칸의 텍스트 중앙 정렬 */
-        #timetable > div:nth-child(odd) {
-            background-color: #f4f4f4;
-            font-weight: normal; /* 글자 굵기 없앰 */
+        @keyframes skyCloudMove {
+            0% {
+                background-position: 0% 0%;
+            }
+            25% {
+                background-position: 50% 50%;
+            }
+            50% {
+                background-position: 100% 0%;
+            }
+            75% {
+                background-position: 50% 100%;
+            }
+            100% {
+                background-position: 0% 0%;
+            }
         }
-        
-        /* 시간 칸 스타일 */
-        #timetable > div:first-child {
-            background-color: #f4f4f4;
-            padding: 8px;
+        /* 모달 배경 */
+        #modal {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); 
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
             text-align: center;
-            font-weight: normal; /* 글자 굵기 없앰 */
+            border-radius: 8px;
+            width: 200%;
+            max-width: 1000px;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .btn-close {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #db3434;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-close:hover {
+            background-color: #A62727;
+        }
+        
+        tbody {
+            background-color: #FFFFFF;
+        }
+    
+        h1, h2 {
+            color: #222;
+            font-weight: 600;
+        }
+    
+        /* 테이블 스타일 */
+        table {
+            width: 100%;
+            max-width: 1200px;
+            border-collapse: collapse;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            background-color: #FFFFFF;
+            border-radius: 8px; 
+            overflow: hidden; 
+        }
+    
+        table, th, td {
+            border: 1px solid #E6E8EC;
+        }
+    
+        th, td {
+            padding: 16px;
+            text-align: left;
+            font-size: 14px;
+            color: #495057; 
+        }
+    
+        th {
+            background-color: #E0E0E0;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+    
+        tr:hover {
+            background-color: #E8E8E8; 
+            transition: background-color 0.1s ease-in-out;
+        }
+    
+        .list {
+            position: absolute;
+            left: 50px;
+            top: 5%;
+        }
+    
+        /* 오른쪽 프레임 */
+        .frame {
+            margin-left: 70px;
+            width: 50%;
+            max-width: 1000px;
+            padding: 20px;
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            height: 80vh;
+            position: fixed;
+            top: 50%;
+            left: 70%;
+            transform: translate(-50%, -50%);
+        }
+    
+        /* 시간표 그리드 */
+        #timetable {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            grid-auto-rows: 50px;
+            background-color: #E6E8EC;
+            border-radius: 12px;
+            margin-top: 20px;
+            gap: 1px;
+            
+        }
+    
+        #timetable > div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            background-color: #FFFFFF;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        
+        #timetable > div:nth-child(-n+8) {
+            font-size: 14px;
+            text-align: center;
+            color: #6B7280;
+            font-weight: 600;
+            padding: 8px;
+        }
+    
+        /* 클릭된 셀 스타일 */
+        .cell.selected {
+            background-color: #BBE4FA;
+            transition: background-color 0.2s ease-in-out;
+        }
+    
+        #credit{
+            position: absolute; 
+            top: 0px; 
+            right: 10px; 
+            font-size: 13px; 007bff
+            margin-top: 0px; 
+            background-color: #E0E0E0; 
+            color: #495057;
+            padding: 5px; 
+            border-radius: 5px;
         }
     </style>
+    
+    
+    
+    
 </head>
 <body>
-    <div>
-        <h1 style="text-align: center;">강의 선택</h1>
+    <div id="modal">
+        <div class="modal-content">
+            <img src="/images/info.jpg" alt="info">
+            <button class="btn-close" onclick="closeModal()">지금 시작하기</button>
+        </div>
+    </div>
+
+    <div class="list">
         <table>
             <thead>
                 <tr>
@@ -112,36 +241,63 @@
     </div>
 
     <div class="frame">
-        <h2 style="text-align: center;">시간표</h2>
+        
+        <p id='credit'>
+            총 학점: <span id="totalCredits">0</span>
+        </p>
+        
+        
+        
+        <h2 style="text-align: center;"></h2>
         <div id="timetable">
             <!-- 시간과 요일 헤더 -->
-            <div style="background-color: #f4f4f4; padding: 8px; text-align: center;"></div>
-            <div style="background-color: #f4f4f4; padding: 8px; text-align: center;">월</div>
-            <div style="background-color: #f4f4f4; padding: 8px; text-align: center;">화</div>
-            <div style="background-color: #f4f4f4; padding: 8px; text-align: center;">수</div>
-            <div style="background-color: #f4f4f4; padding: 8px; text-align: center;">목</div>
-            <div style="background-color: #f4f4f4; padding: 8px; text-align: center;">금</div>
-            <div style="background-color: #f4f4f4; padding: 8px; text-align: center;">토</div>
-            <div style="background-color: #f4f4f4; padding: 8px; text-align: center;">일</div>
-
+            <div></div>
+            <div>월</div>
+            <div>화</div>
+            <div>수</div>
+            <div>목</div>
+            <div>금</div>
+            <div>토</div>
+            <div>일</div>
         </div>
+        
     </div>
+    
+    
+    
 
     <script>
+         // 모달을 처음에 띄우기
+    window.onload = function() {
+        document.getElementById("modal").style.display = "flex";
+    };
+
+    // "지금 시작하기" 버튼을 클릭하면 모달을 숨김
+    function closeModal() {
+        document.getElementById("modal").style.display = "none";
+    }
+
         // 제외된 시간 목록
-        let excludedTimes = [];  // 형식: [["월", 1], ["화", 3], ...]
-    
-        // 시간 클릭 시 해당 시간을 제외된 시간으로 설정
+        let excludedTimes = []; // 제외된 시간 목록
+
 function handleTimeClick(cell) {
     // 이미 제외된 시간인지 확인
     if (cell.dataset.disabled === "true") {
-        alert("이미 선택 불가 상태입니다.");
+        
+        // 선택 불가 상태를 해제
+        cell.dataset.disabled = "false";
+        cell.style.backgroundColor = ""; // 배경 색 초기화
+
+        // 제외된 시간 목록에서 해당 시간 제거
+        const day = cell.dataset.day;
+        const startPeriod = parseInt(cell.dataset.hour);
+        excludedTimes = excludedTimes.filter(time => !(time[0] === day && time[1] === startPeriod));
         return;
     }
 
     // 셀을 선택 불가 상태로 표시
     cell.dataset.disabled = "true";  // 해당 셀을 disabled 상태로 설정
-    cell.style.opacity = "0.1"; // 시각적으로 선택 불가 상태 표시
+    cell.style.backgroundColor = "#f5f5f5"; // 시각적으로 선택 불가 상태 표시
     cell.style.cursor = "not-allowed"; // 커서를 not-allowed로 변경
 
     // 클릭한 셀의 요일과 교시를 data-* 속성에서 추출
@@ -150,9 +306,6 @@ function handleTimeClick(cell) {
 
     // 제외된 시간 목록에 추가
     excludedTimes.push([day, startPeriod]);
-
-    console.log(`Excluded time added: ${day} ${startPeriod}교시`);
-    console.log(excludedTimes); // 제외된 시간 배열 출력
 }
 
     
@@ -166,17 +319,16 @@ function handleTimeClick(cell) {
                 for (let i = 0; i < 15; i++) { // 각 시간대
                     const timeCell = document.createElement("div");
                     timeCell.textContent = `${String(startHour + i).padStart(2, "0")}:00 ~ ${String(startHour + i + 1).padStart(2, "0")}:00`;
-                    timeCell.style.backgroundColor = "#f4f4f4";
                     timeCell.style.textAlign = "center";
                     timeCell.style.display = "flex";
                     timeCell.style.justifyContent = "center";
                     timeCell.style.alignItems = "center";
-                    timeCell.style.border = "1px solid #ddd";
+                    timeCell.style.color = "#6F6F70";
                     timetableContainer.appendChild(timeCell);
+                    timeCell.style.fontSize = "10px";
                 
                     for (let j = 0; j < 7; j++) {  // 각 요일에 대해 반복
                         const cell = document.createElement("div");
-                        cell.style.border = "1px solid #ddd";
                         cell.style.height = "50px";
                         cell.style.display = "flex";
                         cell.style.justifyContent = "center";
@@ -221,7 +373,8 @@ function handleTimeClick(cell) {
                         const [start, end] = range.split("~").map(Number);
                         lectureTime.push([trimmedDay, [start, end]]);
                     } else {
-                        lectureTime.push([trimmedDay, [Number(range)]]);
+                        const time = Number(range);
+                        lectureTime.push([trimmedDay, [time, time]]);
                     }
                 });
             } catch (error) {
@@ -243,7 +396,6 @@ async function handleLectureClick(row) {
         professor: row.cells[6].textContent.trim()
     };
     // 강의 시간이 제외된 시간에 포함되면 전송하지 않음
-    // 수정된 부분: 강의 시간 범위 내에서 제외된 시간이 포함되는지 확인
     for (const [day, hours] of lecture.time) {
         // 해당 요일에 대한 제외된 교시들을 추출
         const excludedHours = excludedTimes
@@ -252,7 +404,7 @@ async function handleLectureClick(row) {
         // 강의 시간 범위가 여러 교시를 포함하므로, 시간 범위 내 모든 교시를 검사
         for (let hour = hours[0]; hour <= hours[1] || hours.length === 1; hour++) {  // hours[1]이 없을 경우 단일 교시
             if (excludedHours.includes(hour)) {  // 제외된 시간에 포함되면
-                alert(`선택된 시간대는 제외된 시간입니다: ${day} ${hour}교시`);
+                alert(`${day}요일 ${hour}교시는 제외된 시간입니다!`);
                 return;  // 해당 강의를 전송하지 않고 종료
             }
             if(hours.length===1) break;
@@ -268,60 +420,152 @@ async function handleLectureClick(row) {
             },
             body: JSON.stringify(lecture)
         });
-
+        
         if (!response.ok) {
             throw new Error("서버 응답 오류");
         }
 
+        initializeTimetable();
+
         const result = await response.json(); // 서버로부터 받은 응답 (timetable)
-        console.log("서버 응답:", result);
-
-        // 서버에서 받은 timetable 데이터를 시간표에 반영
-        populateTimetable(result.timetable); // 시간표 업데이트
-
         row.classList.toggle("selected");
+        if(row.classList.contains('selected')) row.style.backgroundColor= '#E8E8E8';
+        else row.style.backgroundColor= '#fff';
+        // 서버에서 받은 timetable 데이터를 시간표에 반영
+        if(result)  populateTimetable(result.timetable); // 시간표 업데이트
+        else document.getElementById("totalCredits").textContent = 0;
+        
     } catch (error) {
         console.error("전송 실패:", error);
         alert("전송 중 오류가 발생했습니다.");
     }
 }
 
+// 시간표에 강의 정보 반영
+function generateColorFromString(input) {
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+        hash = input.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    // 해시값에서 RGB 추출
+    let r = (hash >> 16) & 0xFF;
+    let g = (hash >> 8) & 0xFF;
+    let b = hash & 0xFF;
+
+    // 밝기 계산 (YIQ 방식을 활용)
+    const brightness = (r * 0.299 + g * 0.587 + b * 0.114);
+
+    // 밝기가 너무 어두우면 밝기 조정
+    if (brightness < 128) {
+        r = Math.min(r + 70, 255); // 밝기 조정
+        g = Math.min(g + 70, 255);
+        b = Math.min(b + 70, 255);
+    }
+
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
+// 시간표에 강의 정보 반영
+function populateTimetable(timetable) {
+    const timetableContainer = document.getElementById("timetable");
+    const dayMap = { "월": 1, "화": 2, "수": 3, "목": 4, "금": 5, "토": 6, "일": 7 };
     
-        // 시간표에 강의 정보 반영
-        function populateTimetable(timetable) {
+    // 테이블 내에서 강의 이름, 교수명, 강의시간에 색상을 반영할 행을 선택
+    const lectureRows = document.querySelectorAll("table tbody tr");
+
+    // 시간표 초기화
+    initializeTimetable();
+    let totalCredits = 0;
+    timetable.forEach((lecture) => {
+        const lectureKey = `${lecture.name.toLowerCase().trim()}-${lecture.professor.toLowerCase().trim()}`;
+        const lectureColor = generateColorFromString(lectureKey); // 고유 색상 생성
+        totalCredits += lecture.credits;
+
+        lecture.time.forEach(([day, hours]) => {
+            const column = dayMap[day]; // 요일에 해당하는 열
+            const [startHour, endHour] = hours;
+
+            for (let hour = startHour; hour <= endHour; hour++) {
+                const row = hour + 1;
+                const cellIndex = column + row * 8; // grid index 계산
+                const cell = timetableContainer.children[cellIndex];
+
+                if (cell) {
+                    // 강의 내용 추가
+                    cell.textContent = `${lecture.name}\n(${lecture.professor})`;
+                    cell.style.backgroundColor = lectureColor; // 강의 색상 적용
+                    cell.style.color = "#000";
+                    cell.style.textAlign = "center";
+                    cell.style.whiteSpace = "pre-wrap";
+                    cell.style.fontSize = "12px";
+
+                    // Flexbox로 세로 중앙 정렬
+                    cell.style.display = "flex";
+                    cell.style.justifyContent = "center";
+                    cell.style.alignItems = "center";
+
+                    // 텍스트가 셀 크기에 맞게 잘리지 않도록 설정
+                    cell.style.overflow = "hidden";
+                    cell.style.textOverflow = "ellipsis";
+                    cell.style.wordBreak = "break-word";
+                }
+            }
+        });
+
+        // 왼쪽 테이블의 강의 행 색상 업데이트
+        lectureRows.forEach(row => {
+            const lectureName = row.cells[0].textContent.trim();
+            const professorName = row.cells[6].textContent.trim();
+            const lectureCode = row.cells[1].textContent.trim();
+            const isLectureSelected = row.classList.contains('selected');
+
+            // 강의가 선택되었고 timetable 배열에 포함되면 색상 변경
+            if (isLectureSelected && timetable.some(l => l.name === lectureName && l.professor === professorName && l.code === lectureCode)) {
+                const lectureIdentifier = `${lectureName}-${professorName}`;
+                const color = generateColorFromString(lectureIdentifier);  // 해당 강의와 교수에 맞는 색상 생성
+                row.style.backgroundColor = color;  // 색상 적용
+            } 
+            // 선택된 강의가 timetable 배열에 없으면 원래 색상으로 돌아감
+            else if (isLectureSelected) row.style.backgroundColor = '#E8E8E8'
+        });
+    });
+    document.getElementById("totalCredits").textContent = totalCredits;
+}
+
+        
+
+        
+
+        function initializeTimetable() {
             const timetableContainer = document.getElementById("timetable");
             const dayMap = { "월": 1, "화": 2, "수": 3, "목": 4, "금": 5, "토": 6, "일": 7 };
-
-            timetable.forEach(lecture => {
-                lecture.time.forEach(([day, hours]) => {
-                    const column = dayMap[day]; // 요일에 해당하는 열
-
-                    // 시간 범위인 hours 배열을 순회하면서 모든 교시 색칠
-                
-                    const [startHour, endHour] = (hours.length === 1)?[hours[0],hours[0]]:hours; // 시작 교시와 끝 교시
-
-                    // 시작 교시부터 끝 교시까지 모두 색칠
-                    for (let hour = startHour; hour <= endHour; hour++) {
-                        const row = hour+1; 
-                        const cellIndex = column + row * 8; // grid index 계산 
-                        const cell = timetableContainer.children[cellIndex];
-
-                        // 해당 교시 칸이 존재하면 강의 정보 및 색상을 추가
-                        if (cell) {
-                            cell.textContent = `${lecture.name}\n(${lecture.professor})`;
-                            cell.style.backgroundColor = "#add8e6"; // 색상 추가
-                            cell.style.color = "#000";
-                            cell.style.textAlign = "center";
-                            cell.style.whiteSpace = "pre-wrap"; 
-                            cell.style.fontSize = "8px"; 
-                            cell.style.overflow = "hidden";
-                            cell.style.textOverflow = "ellipsis"; 
-                            cell.style.wordBreak = "break-word"; 
-                        }
-                    }
-                });
+            
+            // 첫 번째 행(요일)을 선택
+            const headerDays = timetableContainer.querySelectorAll("div:nth-child(-n+8)"); // 월, 화, 수, 목, 금, 토, 일
+            
+            // 첫 번째 열(시간)을 선택
+            const headerTimes = [];
+            for (let i = 1; i <= 15; i++) { // 15개의 시간 셀
+                // 각 시간대에 해당하는 셀은 `i`번째 시간대의 첫 번째 열을 찾음
+                headerTimes.push(timetableContainer.querySelector(`div:nth-child(${i * 8 + 1})`));
+            }
+            
+            // 합쳐서 헤더 셀 배열 만들기
+            const headerCells = [...headerDays, ...headerTimes];
+            
+            // 시간표의 모든 셀 순회
+            Array.from(timetableContainer.children).forEach((cell) => {
+                // 헤더 셀 건너뛰기
+                if (headerCells.includes(cell) || cell.dataset.disabled === "true") return;
+        
+                // 나머지 셀 초기화
+                cell.style.backgroundColor = "#fff"; // 배경색 초기화
+                cell.style.color = "#000"; // 텍스트 색상 초기화
+                cell.textContent = ""; // 셀 내용 초기화
             });
         }
+        
     </script>
 </body>
 </html>
