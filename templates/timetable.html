@@ -523,7 +523,7 @@ function populateTimetable(timetable) {
 
             // 강의가 선택되었고 timetable 배열에 포함되면 색상 변경
             if (isLectureSelected && timetable.some(l => l.name === lectureName && l.professor === professorName && l.code === lectureCode)) {
-                const lectureIdentifier = `${lectureName}-${professorName}`;
+                const lectureIdentifier = `${lectureName.toLowerCase().trim()}-${professorName.toLowerCase().trim()}`;
                 const color = generateColorFromString(lectureIdentifier);  // 해당 강의와 교수에 맞는 색상 생성
                 row.style.backgroundColor = color;  // 색상 적용
             } 
