@@ -33,11 +33,17 @@ pip install selenium
 
 ![화면1](https://github.com/user-attachments/assets/24ad2399-ac06-4851-9eb8-6dd478acde7f)
 
+<br>
+
 ### 학과 선택 페이지
 ![화면2](https://github.com/user-attachments/assets/b3319fdf-10fc-414a-8ca9-d63a927c2b37)
+
+
 * 웹 크롤링을 통해 추출한 학과 이름들 중 하나를 선택할 수 있습니다.
 
 ![화면3](https://github.com/user-attachments/assets/e3c903e3-dd5d-439b-9860-a30f08acc995)
+
+<br>
 
 ### 선호도 선택
 데이터를 불러오는 동안에 선호도를 조사합니다. 선호하는 것이 없을 시에 선택하지 않을 수도 있습니다.
@@ -53,10 +59,15 @@ pip install selenium
 
 ![화면6](https://github.com/user-attachments/assets/6c97a7ea-df8a-4743-b9db-5c048824e954)
 
+<br>
+
 ### 로딩화면
 * 데이터를 불러오는 동안 로딩화면을 제공합니다.
 
 ![로딩화면](https://github.com/user-attachments/assets/27c3a398-2246-4b75-9c7a-0944b2a29542)
+
+<br>
+
 ### 시간표 생성 화면
 * 이용 설명을 제공합니다.
 
@@ -71,7 +82,7 @@ PuLP 라이브러리를 사용하여 선형 프로그래밍(Linear Programming)�
 
 scipy.optimize.linprog는 정수 제약 조건을 지원하지 않기 때문에, 이를 지원하는 PuLP 라이브러리를 사용하여 각 과목의 선택 여부를 나타내는 변수(0 또는 1)를 binary하게 모델링했습니다.
 
-이용자가 선택한 선호도(예: 선호 교수, 강의 시간대 등)를 기반으로 각 강의에 가중치를 부여합니다. 그 후, 가중치의 합이 최대가 되는 강의 조합을 최적화 알고리즘으로 계산하여 반환합니다.
+이용자의 선택(예: 선호 교수, 강의 시간대 등)를 기반으로 각 강의에 선호도를 부여합니다. 그 후, 선호도의 합이 최대가 되는 강의 조합을 최적화 알고리즘으로 계산하여 반환합니다.
 ```python
  # 선호도 설정
     prfs = []
@@ -165,6 +176,9 @@ function generateColorFromString(input) {
     return `rgb(${r}, ${g}, ${b})`;
 }
 ```
+## API
+![image](https://github.com/user-attachments/assets/3cbf02bc-b677-47b6-aaf8-3b0e9e60d218)
+
 ## Refernce
 * https://doyu-l.tistory.com/360 -  디자인 패턴 참고
 * https://wikidocs.net/137914 - 셀레니엄 사용
