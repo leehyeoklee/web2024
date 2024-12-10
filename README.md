@@ -20,11 +20,15 @@ pip install fastapi
 pip install "uvicorn[standard]"
 pip install pydantic
 pip install selenium
+pip install jinja2
+pip install pulp
 ```
 * Fast api : 비동기 방식의 웹 서버 프레임워크
 * uvicorn : 비동기 방식의 http 서버
 * pydantic : JSON 데이터를 자동으로 Python 객체로 변환
 * selenium : 서울과기대 수강신청 사이트에서 정보를 크롤링
+* jinja2 : Python에서 HTML 템플릿을 렌더링하는 데 사용
+* pulp : 최적화 문제를 해결하는 데에 사용
 ## 시연 영상
 [![Video Title](https://img.youtube.com/vi/lQ17SrF5W64/0.jpg)](https://www.youtube.com/watch?v=lQ17SrF5W64)
 
