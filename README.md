@@ -25,7 +25,8 @@ pip install selenium
 * uvicorn : 비동기 방식의 http 서버
 * pydantic : JSON 데이터를 자동으로 Python 객체로 변환
 * selenium : 서울과기대 수강신청 사이트에서 정보를 크롤링
-## 실행 영상
+## 시연 영상
+[![Video Title](https://img.youtube.com/vi/lQ17SrF5W64/0.jpg)](https://www.youtube.com/watch?v=lQ17SrF5W64)
 
 ## 페이지 별 기능
 ### 메인 페이지

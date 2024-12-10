@@ -22,7 +22,7 @@ semester=""
 
 @app.get("/", response_class=HTMLResponse)
 async def main_page(request: Request):
-    return templates.TemplateResponse("index.html", {
+    return templates.TemplateResponse("templates/index.html", {
         "request": request,
     })    
     
@@ -40,7 +40,7 @@ async def selection_page(request: Request):
     global department_options
     if(not department_options):
         department_options = get_department_options()  # 동기 함수 호출
-    return templates.TemplateResponse("selection.html", {
+    return templates.TemplateResponse("templates/selection.html", {
         "request": request,
         "departments": department_options  # 학과 목록 데이터 추가
     })
