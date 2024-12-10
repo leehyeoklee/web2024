@@ -414,7 +414,7 @@ async function handleLectureClick(row) {
     
     // 제외된 시간에 포함되지 않는다면, 서버로 강의 전송
     try {
-        const response = await fetch("http://127.0.0.1:8000/api/timetable", {
+        const response = await fetch("/api/timetable", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
