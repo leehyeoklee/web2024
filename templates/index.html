@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STS</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+      overflow: hidden;
+      transition: background-image 1s ease-in-out; /* 배경 전환 효과 */
+      position: relative;
+      background-size: cover; /* 배경이 화면을 꽉 채우도록 */
+      background-position: center; /* 배경 중앙에 위치 */
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: inherit;
+      background-size: inherit;
+      background-position: inherit;
+      filter: blur(8px); /* 흐림 효과 */
+      z-index: -1; /* 배경을 다른 콘텐츠 뒤로 배치 */
+    }
+
+    h1 {
+      font-size: 2em;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 300px;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 20px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      padding: 10px;
+      background-color: #3d3d3d57;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .footer-message {
+      font-style: italic;
+      color: #ffffff;
+    }
+
+    /* 로딩 모달 */
+    #loadingModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      display: none;
+    }
+
+    #loadingModal .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .spinner {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #db3434;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 2s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>SEOULTECH<br>시간표 생성기</h1>
+    <label for="semester">학기를 선택하세요</label>
+    <select id="semester">
+      <option value="1">1학기</option>
+      <option value="2">2학기</option>
+      <option value="3">여름학기</option>
+      <option value="4">겨울학기</option>
+    </select>
+    <button onclick="submitSemester()">시작하기</button>
+  </div>
+
+  <footer>
+    <p class="footer-message">컴퓨터공학과 21101217 이혁 | e-mail: dlgur213@naver.com | github: https://github.com/leehyeoklee | 사진 출처: 서울과기대 홈페이지 | 정보 출처: 서울과기대 수강신청 사이트</p>
+  </footer>
+
+  <!-- 로딩 모달 -->
+  <div id="loadingModal">
+    <div class="modal-content">
+      <div class="spinner"></div>
+      <h2>잠시만 기다려주세요...</h2>
+      <p>데이터를 불러오는 중입니다.</p>
+    </div>
+  </div>
+
+  <script>
+    // 배경 이미지 배열
+    const backgroundImages = [
+    'https://www.seoultech.ac.kr/site/www/res/img/tour_img01.png',
+      'https://www.seoultech.ac.kr/storage/www/ckfinder/images/B0D334B5C27048A1BEFD80E9DBDDD979.jpg',
+      // 추가 배경 이미지
+    ];
+  
+    let currentBackgroundIndex = 0;
+  
+    // 페이지가 로드될 때 첫 번째 배경 이미지 설정
+    document.body.style.backgroundImage = `url(https://www.seoultech.ac.kr/storage/www/ckfinder/images/B0D334B5C27048A1BEFD80E9DBDDD979.jpg)`;
+  
+    // 배경을 주기적으로 변경하는 함수
+    function changeBackground() {
+      document.body.style.backgroundImage = `url(${backgroundImages[currentBackgroundIndex]})`;
+      currentBackgroundIndex = (currentBackgroundIndex + 1) % backgroundImages.length;
+    }
+  
+    // 배경 변경 주기 설정 (8초마다 변경)
+    setInterval(changeBackground, 8000);
+  
+    // 학기 선택 후 처리
+    async function submitSemester() {
+      const semester = document.getElementById('semester').value;
+  
+      // 로딩 모달 보이기
+      document.getElementById('loadingModal').style.display = 'flex';
+  
+      // 스피너 애니메이션
+      const spinner = document.querySelector('.spinner');
+      spinner.style.animationPlayState = 'running';
+  
+      try {
+        const response = await fetch('/api/submit-semester', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ semester: semester }),
+        });
+  
+        if (response.ok) {
+          window.location.href = '/select';  // /select로 GET 요청을 보냄
+        } else {
+          alert("학기 제출에 실패했습니다.");
+          spinner.style.animationPlayState = 'paused';
+          document.getElementById('loadingModal').style.display = 'none';
+        }
+      } catch (error) {
+        console.error("서버와의 연결에 문제가 발생했습니다:", error);
+        alert("서버와 연결하는 데 오류가 발생했습니다.");
+        spinner.style.animationPlayState = 'paused';
+        document.getElementById('loadingModal').style.display = 'none';
+      }
+    }
+  
+    // 페이지 로딩 시 로딩 모달 처리
+    window.addEventListener('load', function() {
+      document.getElementById('loadingModal').style.display = 'none';
+    });
+  </script>
+  
+
+</body>
+</html>

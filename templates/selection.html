@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STS</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+      overflow: hidden;
+      transition: background-image 1s ease-in-out; /* 배경 전환 효과 */
+      position: relative;
+      background-size: cover; /* 배경이 화면을 꽉 채우도록 */
+      background-position: center; /* 배경 중앙에 위치 */
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: inherit;
+      background-size: inherit;
+      background-position: inherit;
+      filter: blur(8px); /* 흐림 효과 */
+      z-index: -1; /* 배경을 다른 콘텐츠 뒤로 배치 */
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      text-align: center;
+      width: 40%;
+      height: 300px;
+    }
+    label {
+      font-size: 1.2rem;
+      display: block;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    select {
+      padding: 10px;
+      font-size: 16px;
+      width: 80%;
+      max-width: 400px;
+      margin-bottom: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #db3434;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 2s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .modal.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 800px;
+      text-align: center;
+    }
+
+    .time-table {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+
+    .time-table img {
+      max-width: 45%;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .time-table img:hover {
+      transform: scale(1.05);
+      border-color: #007bff;
+    }
+
+    .close-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 14px;
+      background: #db3434;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .close-btn:hover {
+      background: #ff0000;
+      transform: scale(1.05);
+    }
+
+    /* 기본 버튼 스타일 */
+    .professor-list {
+      display: flex;
+      flex-wrap: wrap; /* 버튼이 넘치면 다음 줄로 배치 */
+      gap: 10px; /* 버튼 간 간격을 10px로 설정 */
+      justify-content: flex-start; /* 왼쪽 정렬 */
+    }
+    
+    .professor-list button {
+      width: calc(25% - 10px); /* 4개씩 배치되도록 버튼의 너비를 설정 */
+      padding: 10px;
+      color: #fff;
+      background-color: #5586D7; /* 기본 색 */
+      border: none;
+      border-radius: 5px;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .professor-list button.selected {
+      background-color: #00358b; /* 선택된 색 */
+    }
+    .professor-list button:hover {
+      background-color: rgb(0,53,139);
+      transform: scale(1.05);
+    }
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      padding: 10px;
+      background-color: #3d3d3d57;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .footer-message {
+      font-style: italic;
+      color: #ffffff;
+    }
+
+   
+  </style>
+</head>
+<body>
+
+  <div class="container">
+  <h1>당신의 학과는?</h1>
+  <label for="department" style="margin-top: 80px;">학과 선택하기</label>
+  <select id="department" >
+    {% for department in departments %}
+      <option value="{{ department }}">{{ department }}</option>
+    {% endfor %}
+  </select>
+  </div>
+
+  <!-- 로딩 모달 -->
+  <div class="modal" id="loadingModal">
+    <div class="modal-content">
+      <h2>잠시만 기다려주세요...</h2>
+      <p>데이터를 가져오는 중입니다.</p>
+      <div class="spinner"></div>
+      <p>"시간표는 당신의 선호도에 맞게 생성됩니다!📅✨"</p>
+    </div>
+  </div>
+
+  <!-- 시간표 선택 모달 -->
+  <div class="modal" id="timeTableModal">
+    <div class="modal-content">
+      <h2 id="modalTitle">어떠한 시간표가 더 좋나요?</h2>
+      <p>선택하지 않고 대기해도 됩니다!</p>
+      <div class="time-table">
+        <img id="concentrated" src="images/concentrated.png" alt="집중형 시간표" onclick="selectTimeTable('concentrated')">
+        <img id="distributed" src="images/distributed.png" alt="분산형 시간표" onclick="selectTimeTable('distributed')">
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- 시간대 선택 모달 -->
+  <div class="modal" id="timeOfDayModal">
+    <div class="modal-content">
+      <h2 id="timeOfDayTitle">어떠한 시간표가 더 좋나요?</h2>
+      <div class="time-table">
+        <img id="am" src="images/am.png" alt="오전 강의" onclick="selectTimeOfDay('am')">
+        <img id="pm" src="images/pm.png" alt="오후 강의" onclick="selectTimeOfDay('pm')">
+      </div>
+    </div>
+  </div>
+
+  <!-- 교수 선택 모달 -->
+  <div class="modal" id="professorModal">
+    <div class="modal-content">
+      <h2 id="professorTitle">선호하는 교수를 선택하세요</h2>
+      <div id="professorList" class="professor-list">
+        <!-- 교수 목록 버튼 -->
+      </div>
+      <button id="generateScheduleBtn" class="close-btn" onclick="sendSelectionData()">시간표 생성하러 가기</button>
+    </div>
+  </div>
+
+  <footer>
+    <p class="footer-message">컴퓨터공학과 21101217 이혁 | e-mail: dlgur213@naver.com | github: https://github.com/leehyeoklee | 사진 출처: 서울과기대 홈페이지 | 정보 출처: 서울과기대 수강신청 사이트</p>
+  </footer>
+  <script>
+
+// 배경 이미지 배열
+const backgroundImages = [
+'https://www.seoultech.ac.kr/site/www/res/img/tour_img01.png',
+  'https://www.seoultech.ac.kr/storage/www/ckfinder/images/B0D334B5C27048A1BEFD80E9DBDDD979.jpg',
+  // 추가 배경 이미지
+];
+
+let currentBackgroundIndex = 0;
+
+// 페이지가 로드될 때 첫 번째 배경 이미지 설정
+document.body.style.backgroundImage = `url(https://www.seoultech.ac.kr/storage/www/ckfinder/images/B0D334B5C27048A1BEFD80E9DBDDD979.jpg)`;
+
+// 배경을 주기적으로 변경하는 함수
+function changeBackground() {
+  document.body.style.backgroundImage = `url(${backgroundImages[currentBackgroundIndex]})`;
+  currentBackgroundIndex = (currentBackgroundIndex + 1) % backgroundImages.length;
+}
+
+// 배경 변경 주기 설정 (8초마다 변경)
+setInterval(changeBackground, 8000);
+    // 학과 선택 시 호출되는 함수
+    async function sendDepartmentValue(departmentValue) {
+      loadingModal.classList.add("show");
+
+      try {
+        const response = await fetch('/api/submit-department', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ departmentValue: departmentValue }),
+        });
+
+        const data = await response.json();
+        populateProfessorSelection(data.professors);
+
+        loadingModal.classList.remove("show");
+        professorModal.classList.add("show");
+      } catch (error) {
+        console.error("Error fetching professor data:", error);
+        alert("데이터를 가져오는 데 실패했습니다.");
+        loadingModal.classList.remove("show");
+      }
+    }
+
+    function populateProfessorSelection(professors) {
+      professorList.innerHTML = "";
+    
+      professors.forEach(professor => {
+        const button = document.createElement("button");
+        button.id = professor;
+        button.textContent = professor;
+    
+        button.addEventListener("click", function () {
+          button.classList.toggle("selected"); // 클래스를 이용해 토글
+        });
+    
+        professorList.appendChild(button);
+      });
+    }
+
+    const departmentSelect = document.getElementById("department");
+    departmentSelect.addEventListener("change", function () {
+      const departmentValue = departmentSelect.value;
+      sendDepartmentValue(departmentValue);
+      timeTableModal.classList.add("show");
+    });
+
+    let selectedTables = [];
+
+    function selectTimeTable(tableId) {
+      selectedTables.push(tableId);
+      timeOfDayModal.classList.add("show");
+      timeTableModal.classList.remove("show");
+    }
+
+    function selectTimeOfDay(timeOfDay) {
+      selectedTables.push(timeOfDay);
+      timeOfDayModal.classList.remove("show");
+    }
+
+    function getSelectedProfessors() {
+      const selectedProfessors = [];
+      document.querySelectorAll("#professorList button.selected").forEach(button => {
+        selectedProfessors.push(button.id);
+      });
+      return selectedProfessors;
+    }
+
+    async function sendSelectionData() {
+      const professors = getSelectedProfessors();
+      const payload = {
+        selectedTables: selectedTables,
+        selectedProfessors: professors
+      };
+
+      try {
+        const response = await fetch('/api/submit-selection', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+          window.location.href = '/api/timetable';
+        } else {
+          throw new Error("데이터 전송 실패");
+        }
+      } catch (error) {
+        console.error("Error sending data:", error);
+        alert("데이터 전송 중 오류가 발생했습니다.");
+      }
+    }
+  </script>
+
+</body>
+</html>
