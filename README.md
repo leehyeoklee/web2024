@@ -1,4 +1,4 @@
-## 🏫 서울 과기대 시간표 생성 웹 STS (SeoulTech Scheduler)
+# 🏫 서울 과기대 시간표 생성 웹 STS (SeoulTech Scheduler)
 
 ##  프로젝트 소개    
 - STS는 학생들이 자신의 선호도에 따라 최적화된 시간표를 손쉽게 생성할 수 있도록 설계된 웹 애플리케이션입니다.
@@ -14,7 +14,6 @@
 3. 데이터 처리: Python PuLP 라이브러리를 사용한 최적화 알고리즘
 4. 크롤링: Selenium 라이브러리를 사용해 강의 데이터를 실시간으로 가져옴
 ## 라이브러리
-
 ```
 pip install fastapi
 pip install "uvicorn[standard]"
@@ -184,6 +183,10 @@ function generateColorFromString(input) {
 ## API
 ![image](https://github.com/user-attachments/assets/3cbf02bc-b677-47b6-aaf8-3b0e9e60d218)
 
+## 실행
+웹 링크: http://43.203.199.29 - AWS EC2에서 UBUNTU를 사용하여 서버를 구축하였습니다.
+
+로컬에서 실행 : ```uvicorn main:app --reload```
 ## Refernce
 * https://doyu-l.tistory.com/360 -  디자인 패턴 참고
 * https://wikidocs.net/137914 - 셀레니엄 사용
